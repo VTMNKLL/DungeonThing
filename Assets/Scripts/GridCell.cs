@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GridCell : MonoBehaviour
 {
+
     [SerializeField]
     Transform arrow = default;
 
