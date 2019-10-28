@@ -3,8 +3,8 @@ using System.Collections;
 
 public static class GameEnum
 { 
-    public enum GameTileContentType
+    public enum GridCellContentType
     {
-        Empty, Destination
+        Empty, Destination, Wall
     }
 }

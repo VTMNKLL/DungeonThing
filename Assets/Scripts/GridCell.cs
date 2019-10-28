@@ -8,8 +8,10 @@ public class GridCell : MonoBehaviour
     [SerializeField]
     Transform arrow = default;
 
+    GridCellContent content;
+
     // Hold path edges to neighboring cells
-    GridCell north, east, south, west, nextOnPath;
+    public GridCell north, east, south, west, nextOnPath;
 
     int distance;
 
@@ -35,6 +37,12 @@ public class GridCell : MonoBehaviour
             nextOnPath == south ? southRotation :
             westRotation;
     }
+
+    public void HidePath()
+    {
+        arrow.gameObject.SetActive(false);
+    }
+
     public static void MakeEastWestNeighbors(GridCell east, GridCell west)
     {
         Debug.Assert(
@@ -78,7 +86,14 @@ public void BecomeDestination () {
         }
         neighbor.distance = distance + 1;
         neighbor.nextOnPath = this;
-        return neighbor;
+        if (neighbor.content.Type != GameEnum.GridCellContentType.Wall)
+        {
+            return neighbor;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public GridCell GrowPathNorth() => GrowPathTo(north);
@@ -88,6 +103,23 @@ public void BecomeDestination () {
     public GridCell GrowPathSouth() => GrowPathTo(south);
 
     public GridCell GrowPathWest() => GrowPathTo(west);
+
+
+    // Field to change the content of this tile
+    public GridCellContent Content
+    {
+        get => content;
+        set
+        {
+            Debug.Assert(value != null, "Null assigned to content!");
+            if (content != null)
+            {
+                content.Recycle();
+            }
+            content = value;
+            content.transform.localPosition = transform.localPosition;
+        }
+    }
 
     // Start is called before the first frame update
     void Start()

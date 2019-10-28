@@ -19,10 +19,15 @@ public class Grid : MonoBehaviour
 
     Queue<GridCell> searchFrontier = new Queue<GridCell>();
 
-    public void Initialize(Vector2Int size)
+    GridCellContentFactory contentFactory;
+
+    public bool showPaths;
+
+    public void Initialize(Vector2Int size, GridCellContentFactory contentFactory)
     {
         // Resize the main ground
         this.size = size;
+        this.contentFactory = contentFactory;
         ground.localScale = new Vector3(size.x, size.y, 1f);
 
         // Lay all grid cells
@@ -55,21 +60,38 @@ public class Grid : MonoBehaviour
                 {
                     cell.IsAlternative = !cell.IsAlternative;
                 }
+                if (x == 0 || x == size.x-1 || y == 0 || y == size.y-1)
+                    cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Wall);
+                else
+                    cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Empty);
+
             }
         }
 
-        FindPaths();
+        ToggleDestination(cells[cells.Length / 2]);
 
     }
 
-    public void FindPaths()
+    public bool FindPaths()
     {
         foreach (GridCell cell in cells)
         {
-            cell.ClearPath();
+            if (cell.Content.Type == GameEnum.GridCellContentType.Destination)
+            {
+                cell.BecomeDestination();
+                searchFrontier.Enqueue(cell);
+            }
+            else
+            {
+                cell.ClearPath();
+            }
         }
-        cells[cells.Length / 2].BecomeDestination();
-        searchFrontier.Enqueue(cells[cells.Length/2]);
+        if (searchFrontier.Count == 0)
+        {
+            return false;
+        }
+        //cells[cells.Length / 2].BecomeDestination();
+        //searchFrontier.Enqueue(cells[cells.Length/2]);
 
         while (searchFrontier.Count > 0)
         {
@@ -93,11 +115,109 @@ public class Grid : MonoBehaviour
             }
         }
 
+        // Make sure there's never an enclosed space
         foreach (GridCell cell in cells)
         {
-            cell.ShowPath();
+            if (!cell.HasPath)
+            {
+                return false;
+            }
+        }
+
+        if (showPaths)
+        {
+            foreach (GridCell cell in cells)
+            {
+                cell.ShowPath();
+            }
+        }
+        return true;
+    }
+
+
+    public GridCell GetCell(Ray ray)
+    {
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            int x = (int)(hit.point.x + size.x * 0.5f);
+            int y = (int)(hit.point.z + size.y * 0.5f);
+            if (x >= 0 && x < size.x && y >= 0 && y < size.y)
+            {
+                return cells[x + y * size.x];
+            }
+        }
+        return null;
+    }
+
+    public GridCell GetCell(Vector2Int pos)
+    {
+        if (pos.x >= 0 && pos.x < size.x && pos.y >= 0 && pos.y < size.y)
+        {
+            return cells[pos.x + pos.y * size.x];
+        }
+        return null;
+    }
+
+
+    public void ToggleDestination (GridCell cell)
+    {
+        if (cell.Content.Type == GameEnum.GridCellContentType.Destination)
+        {
+            cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Empty);
+            if (!FindPaths()) // failure to find a path
+            {
+                cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Destination);
+                FindPaths();
+            }
+        }
+        else if (cell.Content.Type == GameEnum.GridCellContentType.Empty)
+        {
+            cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Destination);
+            FindPaths();
         }
     }
+
+    public void ToggleWall (GridCell cell)
+    {
+        if (cell.Content.Type == GameEnum.GridCellContentType.Wall)
+        {
+            cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Empty);
+            FindPaths();
+        }
+        else if (cell.Content.Type == GameEnum.GridCellContentType.Empty)
+        {
+            cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Wall);
+            if (!FindPaths())
+            {
+                cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Empty);
+                FindPaths();
+            }
+        }
+    }
+
+    public bool ShowPaths
+    {
+        get => showPaths;
+        set
+        {
+            showPaths = value;
+            if (showPaths)
+            {
+                foreach (GridCell cell in cells)
+                {
+                    cell.ShowPath();
+                }
+            }
+            else
+            {
+                foreach (GridCell cell in cells)
+                {
+                    cell.HidePath();
+                }
+            }
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start()
