@@ -28,6 +28,8 @@ public class Player : MonoBehaviour
     public Vector3 finalDirection;
     public Transform camTransform;
 
+    public float debugValue;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -141,12 +143,14 @@ public class Player : MonoBehaviour
             //this.transform.position += new Vector3(0,Mathf.Sin(progressThruMoveAnimation / _gameManager.gameTimer.executionTime));
 
             progressThruMoveAnimation += Time.deltaTime;
-            if (progressThruMoveAnimation > 1)
+            if (progressThruMoveAnimation / _gameManager.gameTimer.executionTime > 1)
             {
-                progressThruMoveAnimation = 1;
+                progressThruMoveAnimation = _gameManager.gameTimer.executionTime;
                 animatingMove = false;
             }
             this.transform.position = Vector3.Lerp(lastCell.transform.position, currentCell.transform.position, progressThruMoveAnimation / _gameManager.gameTimer.executionTime);
+            this.transform.position += new Vector3(0, .05f * Mathf.Cos(.5f * Mathf.PI * progressThruMoveAnimation/_gameManager.gameTimer.executionTime) * Mathf.Sin(2 * Mathf.PI * progressThruMoveAnimation / _gameManager.gameTimer.executionTime), 0);
+            debugValue = progressThruMoveAnimation / _gameManager.gameTimer.executionTime;
         }
 
         if (animatingTurn)
