@@ -5,6 +5,6 @@ public static class GameEnum
 { 
     public enum GridCellContentType
     {
-        Empty, Destination, Wall
+        Empty, Destination, Wall, Player, Item
     }
 }

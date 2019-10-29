@@ -8,6 +8,10 @@ public class GridCellContent : MonoBehaviour
 
     GridCellContentFactory originFactory;
 
+    float animationTimer = 0;
+    float animationSpeed = 0;
+    bool animate = false;
+
     public GridCellContentFactory OriginFactory
     {
         get => originFactory;
@@ -18,10 +22,20 @@ public class GridCellContent : MonoBehaviour
         }
     }
 
-    public void Recycle ()
+    public int Recycle ()
     {
-        originFactory.Reclaim(this);
+        return originFactory.Reclaim(this);
     }
+
+    public void RecycleWithAnimation()
+    {
+
+    }
+
+    //public void GameObject()
+    //{
+    //    originFactory.
+    //}
 
     public GameEnum.GridCellContentType Type => type;
 

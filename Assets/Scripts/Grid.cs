@@ -23,7 +23,9 @@ public class Grid : MonoBehaviour
 
     public bool showPaths;
 
-    public void Initialize(Vector2Int size, GridCellContentFactory contentFactory)
+    public int remainingCoins = 0;
+
+    public void Initialize(Vector2Int size, GridCellContentFactory contentFactory, float coinChance)
     {
         // Resize the main ground
         this.size = size;
@@ -63,8 +65,16 @@ public class Grid : MonoBehaviour
                 if (x == 0 || x == size.x-1 || y == 0 || y == size.y-1)
                     cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Wall);
                 else
-                    cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Empty);
-
+                {
+                    if (Random.value <= coinChance)
+                    {
+                        cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Item);
+                    }
+                    else
+                    {
+                        cell.Content = contentFactory.Get(GameEnum.GridCellContentType.Empty);
+                    }
+                }
             }
         }
 

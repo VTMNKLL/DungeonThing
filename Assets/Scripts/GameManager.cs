@@ -26,11 +26,16 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GridCellContentFactory cellContentFactory;
 
+    public float coinChance;
+
+    public int remainingCoins;
+
     Ray TouchRay => Camera.main.ScreenPointToRay(Input.mousePosition);
 
     void Awake()
     {
-        board.Initialize(boardSize,cellContentFactory);
+        board.Initialize(boardSize, cellContentFactory, coinChance);
+
         //player = Instantiate(playerPrefab);
         //player.transform.SetParent(transform, false);
         player.CurrentCell = board.GetCell(playerStartPosition);
@@ -64,32 +69,44 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0))
         {
-            HandleTouch();
+            //HandleTouch();
         }
         else if (Input.GetMouseButtonDown(1))
         {
-            HandleAlternativeTouch();
+            //HandleAlternativeTouch();
         }
     }
 
     void HandleTouch()
     {
-        GridCell cell = board.GetCell(TouchRay);
-        if (cell != null)
+        //GridCell cell = board.GetCell(TouchRay);
+        //if (cell != null)
+        //{
+        //    //cell.Content = cellContentFactory.Get(GameEnum.GridCellContentType.Destination);
+        //    board.ToggleWall(cell);
+        //}
+
+        RaycastHit hit;
+        Ray ray = TouchRay;
+        Debug.Log("Attempting Raycast...");
+        if (Physics.Raycast(ray, out hit))
         {
-            //cell.Content = cellContentFactory.Get(GameEnum.GridCellContentType.Destination);
-            board.ToggleWall(cell);
+            Debug.Log("Hit!! " + hit.GetType());
+            //Transform objectHit = hit.transform;
+
+            // Do something with the object that was hit by the raycast.
         }
+
     }
 
 
     void HandleAlternativeTouch()
     {
-        GridCell cell = board.GetCell(TouchRay);
-        if (cell != null)
-        {
-            //cell.Content = cellContentFactory.Get(GameEnum.GridCellContentType.Destination);
-            board.ToggleDestination(cell);
-        }
+        //GridCell cell = board.GetCell(TouchRay);
+        //if (cell != null)
+        //{
+        //    //cell.Content = cellContentFactory.Get(GameEnum.GridCellContentType.Destination);
+        //    board.ToggleDestination(cell);
+        //}
     }
 }
