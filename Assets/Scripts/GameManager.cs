@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -30,15 +31,25 @@ public class GameManager : MonoBehaviour
 
     public int remainingCoins;
 
+    public int numberCollected = 0;
+    public int numberLeft = 0;
+    public int originalNumber = 0;
+
+    public Text textBox;
+    bool displayWinText = false;
+
+
     Ray TouchRay => Camera.main.ScreenPointToRay(Input.mousePosition);
 
     void Awake()
     {
         board.Initialize(boardSize, cellContentFactory, coinChance);
-
+        originalNumber = numberLeft = cellContentFactory.typeCounter[GameEnum.GridCellContentType.Item];
+        numberCollected = 0;
         //player = Instantiate(playerPrefab);
         //player.transform.SetParent(transform, false);
         player.CurrentCell = board.GetCell(playerStartPosition);
+        textBox.text = numberCollected + " / " + originalNumber;
     }
 
     // Invoked if component may have changed
@@ -74,6 +85,25 @@ public class GameManager : MonoBehaviour
         else if (Input.GetMouseButtonDown(1))
         {
             //HandleAlternativeTouch();
+        }
+
+        int items = cellContentFactory.typeCounter[GameEnum.GridCellContentType.Item];
+        if (items == 0 && displayWinText == false)
+        {
+            if (items == 0)
+            {
+                textBox.text = "Congratulations....";
+            }
+        }
+        else if (items != numberLeft)
+        {
+            numberLeft = items;
+            numberCollected = originalNumber - numberLeft;
+            
+        }
+        else
+        {
+            textBox.text = numberCollected + " / " + originalNumber;
         }
     }
 

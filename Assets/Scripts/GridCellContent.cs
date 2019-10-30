@@ -8,6 +8,8 @@ public class GridCellContent : MonoBehaviour
 
     GridCellContentFactory originFactory;
 
+    public GridCell myCell;
+
     float animationTimer = 0;
     float animationSpeed = 0;
     bool animate = false;
@@ -24,6 +26,7 @@ public class GridCellContent : MonoBehaviour
 
     public int Recycle ()
     {
+        //myCell.Content = originFactory.Get(GameEnum.GridCellContentType.Empty);
         return originFactory.Reclaim(this);
     }
 
@@ -38,5 +41,15 @@ public class GridCellContent : MonoBehaviour
     //}
 
     public GameEnum.GridCellContentType Type => type;
+
+    public GridCell MyCell
+    {
+        get => myCell;
+        set
+        {
+            //Debug.Assert() should assert that a gridcell can't have multiple contents
+            myCell = value;
+        }
+    }
 
 }

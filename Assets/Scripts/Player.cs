@@ -129,13 +129,13 @@ public class Player : MonoBehaviour
                     finalDirection = moveDirection * forwardDirection;
                     angle = Mathf.Atan2(finalDirection.x, finalDirection.z) * Mathf.Rad2Deg;
                 
-                    if (finalDirection.magnitude > 0 && angle >= -45 && angle < 45 && currentCell.north != null)
+                    if (finalDirection.magnitude > 0 && angle >= -45 && angle < 45 && currentCell.north != null && !(currentCell.north.Content.Type == GameEnum.GridCellContentType.Wall || currentCell.north.Content.Type == GameEnum.GridCellContentType.Item))
                         targetCell = currentCell.north;
-                    if (finalDirection.magnitude > 0 && (angle > 135 || angle < -135) && currentCell.south != null)
+                    if (finalDirection.magnitude > 0 && (angle > 135 || angle < -135) && currentCell.south != null && !(currentCell.south.Content.Type == GameEnum.GridCellContentType.Wall || currentCell.south.Content.Type == GameEnum.GridCellContentType.Item))
                         targetCell = currentCell.south;
-                    if (finalDirection.magnitude > 0 && (angle > 45 && angle < 135) && currentCell.east != null)
+                    if (finalDirection.magnitude > 0 && (angle > 45 && angle < 135) && currentCell.east != null && !(currentCell.east.Content.Type == GameEnum.GridCellContentType.Wall || currentCell.east.Content.Type == GameEnum.GridCellContentType.Item))
                         targetCell = currentCell.east;
-                    if (finalDirection.magnitude > 0 && (angle > -135 && angle < -45) && currentCell.west != null)
+                    if (finalDirection.magnitude > 0 && (angle > -135 && angle < -45) && currentCell.west != null && !(currentCell.west.Content.Type == GameEnum.GridCellContentType.Wall || currentCell.west.Content.Type == GameEnum.GridCellContentType.Item))
                         targetCell = currentCell.west;
 
                     if (targetCell != null)
@@ -180,7 +180,8 @@ public class Player : MonoBehaviour
                         {
                             if (content.Type == GameEnum.GridCellContentType.Item)
                             {
-                                Debug.Log("Number left: " + content.Recycle());
+                                content.MyCell.Content = content.OriginFactory.Get(GameEnum.GridCellContentType.Empty);
+                                //Debug.Log("Number left: " + content.Recycle());
                             }
                         }
                     }
@@ -209,6 +210,7 @@ public class Player : MonoBehaviour
                 progressThruMoveAnimation = _gameManager.gameTimer.executionTime;
                 animatingMove = false;
             }
+            Vector3 vel = new Vector3();
             this.transform.position = Vector3.Lerp(lastCell.transform.position, currentCell.transform.position, progressThruMoveAnimation / _gameManager.gameTimer.executionTime);
             this.transform.position += new Vector3(0, .05f * Mathf.Cos(stepMultiplier * Mathf.PI * progressThruMoveAnimation/_gameManager.gameTimer.executionTime) * Mathf.Sin(2 * Mathf.PI * progressThruMoveAnimation / _gameManager.gameTimer.executionTime), 0);
             debugValue = progressThruMoveAnimation / _gameManager.gameTimer.executionTime;

@@ -8,6 +8,7 @@ public class GridCell : MonoBehaviour
     [SerializeField]
     Transform arrow = default;
 
+    [SerializeField]
     GridCellContent content;
 
     // Hold path edges to neighboring cells
@@ -117,6 +118,7 @@ public void BecomeDestination () {
                 content.Recycle();
             }
             content = value;
+            value.MyCell = this; // order we do things here will matter if we're checking to see if there's only one item reference to this cell
             content.transform.localPosition = transform.localPosition;
         }
     }

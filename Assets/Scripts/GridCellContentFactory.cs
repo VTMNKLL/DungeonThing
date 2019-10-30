@@ -22,7 +22,7 @@ public class GridCellContentFactory : MonoBehaviour
     GridCellContent itemPrefab = default;
 
     [SerializeField]
-    Dictionary<GameEnum.GridCellContentType, int> typeCounter;
+    public Dictionary<GameEnum.GridCellContentType, int> typeCounter;
 
     void Awake()
     {
